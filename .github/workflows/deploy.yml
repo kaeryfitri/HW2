@@ -1,0 +1,47 @@
+name: Deploy to Self-Hosted Runner
+
+# Automatically trigger this deployment workflow right after the CI build finishes successfully
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"] # Must match the exact 'name' in your ci.yml
+    types:
+      - completed
+
+jobs:
+  deploy:
+    # 1. We ONLY run this if the image successfully built and pushed
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    # Run on your self-hosted macOS machine
+    runs-on: [self-hosted, macOS, ARM64]
+
+    steps:
+      # 2. Log in to Docker Hub using the secrets
+      # This is necessary especially if your repo is private or to avoid pull rate limits
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # 3. Pull the latest image freshly pushed by the CI pipeline
+      - name: Pull latest image
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/waste-sorting-api:latest
+
+      # 4. Stop the currently running container 
+      # The "|| true" tells GitHub Actions to keep going even if this fails (e.g., if there is no running container yet)
+      - name: Stop existing container
+        run: docker stop waste-sorting-container || true
+
+      # 5. Remove the stopped container so we can reuse the name "waste-sorting-container"
+      - name: Remove old container
+        run: docker rm waste-sorting-container || true
+
+      # 6 & 7. Start a new container with the latest image
+      # -d runs it in the background (detached)
+      # --restart unless-stopped ensures it boots back up if your machine restarts
+      # -p 8000:8000 maps local port 8000 to inside the container
+      - name: Run new container
+        run: >
+          docker run -d 
+          --name waste-sorting-container 
+          --restart unless-stopped
+          -p 8000:8000 
+          ${{ secrets.DOCKER_USERNAME }}/waste-sorting-api:latest
