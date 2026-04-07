@@ -9,7 +9,7 @@ on:
 jobs:
   docker:
     # A fresh Ubuntu environment to build our image
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     
     steps:
       # Step 1: Check out the latest code from our repository
