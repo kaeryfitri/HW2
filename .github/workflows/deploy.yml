@@ -19,11 +19,11 @@ jobs:
       # 2. Log in to Docker Hub using the secrets
       # This is necessary especially if your repo is private or to avoid pull rate limits
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       # 3. Pull the latest image freshly pushed by the CI pipeline
       - name: Pull latest image
-        run: docker pull ${{ secrets.DOCKER_USERNAME }}/waste-sorting-api:latest
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/waste-sorting-api:latest
 
       # 4. Stop the currently running container 
       # The "|| true" tells GitHub Actions to keep going even if this fails (e.g., if there is no running container yet)
@@ -44,4 +44,4 @@ jobs:
           --name waste-sorting-container 
           --restart unless-stopped
           -p 8000:8000 
-          ${{ secrets.DOCKER_USERNAME }}/waste-sorting-api:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/waste-sorting-api:latest

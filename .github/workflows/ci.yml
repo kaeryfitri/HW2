@@ -38,4 +38,4 @@ jobs:
           push: true
           # We tag the image. The 'latest' tag makes it easy to pull
           # It assumes your repo name in Docker Hub will be 'waste-sorting-api'
-          tags: ${{ secrets.DOCKER_USERNAME }}/waste-sorting-api:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/waste-sorting-api:latest
