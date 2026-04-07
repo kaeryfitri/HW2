@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from services.model_service import model_instance
 
 app = FastAPI(
@@ -7,6 +8,16 @@ app = FastAPI(
     description="A beginner-friendly FastAPI application for image classification.",
     version="1.0.0"
 )
+
+# Mount the static directory to serve CSS and JS
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/", response_class=FileResponse)
+async def root():
+    """
+    Serve the modern frontend UI.
+    """
+    return FileResponse("static/index.html")
 
 @app.get("/health")
 def health_check():
