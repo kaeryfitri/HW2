@@ -1,0 +1,22 @@
+# Ignore Python bytecode and cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environments
+venv/
+env/
+.env
+
+# Ignore git folder to keep container pure
+.git/
+.gitignore
+.github/
+
+# Ignore documentation files
+*.md
+
+# If you download large local dummy model weights later, ignore them here
+# *.h5
+# *.pth
+# *.pt
